@@ -1,3 +1,11 @@
+def Clone(String PAT) {
+         stage('Clone Repo') {
+            steps {
+                sh 'git clone -b feature-ricards https://${PAT}@github.com/SpaceTech-project/SpaceTech-Frontend.git .'
+            }
+        }
+}
+
 def Build() {
      stage('Build') {
           steps {
