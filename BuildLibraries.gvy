@@ -32,7 +32,7 @@ def QualityGate() {
         }
 }
 
-def CreateDocker(String IMAGE_NAME, String BUILD_NUMBER) {
+def CreateDocker(String IMAGE_NAME, String BUILD_NUMBER, String TYPE) {
   stage('Create Docker Image') {
               steps {
                 sh "docker build -t ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ."
@@ -40,7 +40,7 @@ def CreateDocker(String IMAGE_NAME, String BUILD_NUMBER) {
         }
 }
 
-def Trivy(String IMAGE_NAME, String BUILD_NUMBER) {
+def Trivy(String IMAGE_NAME, String BUILD_NUMBER, String TYPE) {
         stage('Trivy Scan') {
               steps {
                 script {
@@ -53,12 +53,12 @@ def Trivy(String IMAGE_NAME, String BUILD_NUMBER) {
         }
 }
 
-def PushToECR(String ECR_REGISTRY, String IMAGE_NAME, String DOCKER_IMAGE) {
+def PushToECR(String ECR_REGISTRY, String IMAGE_NAME, String DOCKER_IMAGE, String TYPE) {
           stage('Push to ECR') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws3']]) {
                     sh "docker login -u AWS -p \$(aws ecr get-login-password) ${ECR_REGISTRY}"
-                  sh "docker tag ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ${DOCKER_IMAGE}"
+                    sh "docker tag ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ${DOCKER_IMAGE}"
                     sh "docker push ${DOCKER_IMAGE}"
                 }
             }
