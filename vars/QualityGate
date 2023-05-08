@@ -1,7 +1,0 @@
-def QualityGate() {
-          stage('SonarQube quality gate') {
-            steps {
-                waitForQualityGate abortPipeline: true
-            }
-        }
-}
