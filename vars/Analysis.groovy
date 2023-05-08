@@ -1,4 +1,4 @@
-def Analysis(Tool scannerHome) {
+def call(scannerHome) {
         stage('Sonarqube analysis') {
               steps {
                 withSonarQubeEnv('SonarScan') {
