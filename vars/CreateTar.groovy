@@ -1,5 +1,5 @@
-def call() {
-                sh 'tar -czf workspace.tar.gz --exclude=node_modules --exclude=README.md --directory=..'
+def call(TYPE, BUILD_NUMBER) {
+                sh 'tar -czf ${TYPE}_${BUILD_NUMBER}.tar.gz --exclude=node_modules --exclude=README.md .'
                 sh 'mkdir -p ../archives'
-                sh 'mv workspace.tar.gz ../archives'
+                sh 'mv ${TYPE}_${BUILD_NUMBER}.tar.gz ../archives'
 }
