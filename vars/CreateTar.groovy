@@ -1,5 +1,5 @@
 def call(TYPE, BUILD_NUMBER) {
     dir('../archives') {
-        sh "tar -czf ${TYPE}_${BUILD_NUMBER}.tar.gz --exclude=node_modules --exclude=README.md --directory=../${TYPE}Song ."
+        sh "sudo tar -czf ${TYPE}_${BUILD_NUMBER}.tar.gz --exclude=node_modules --exclude=README.md --directory=../${TYPE}Song ."
     }
 }
