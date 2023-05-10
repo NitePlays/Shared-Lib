@@ -1,4 +1,4 @@
-def call(PAT) {
+def call(PAT, NAME) {
        cleanWs()
-       sh 'git clone -b feature-ricards https://${PAT}@github.com/SpaceTech-project/SpaceTech-Frontend.git .'
+       sh 'git clone -b feature-ricards https://${PAT}@github.com/SpaceTech-project/SpaceTech-${NAME}.git .'
 }
