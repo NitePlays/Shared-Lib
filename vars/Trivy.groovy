@@ -1,11 +1,14 @@
 def call(IMAGE_NAME, BUILD_NUMBER, TYPE) {
-    script {
-        sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > vuln.json"
-        def vulnerabilities = readFile file: 'vuln.json'
-        
-            if (vulnerabilities_contain == 'CRITICAL') {
-                error "Critical vulnerability found"
-            }
-        }
-    }
+                script {
+                    def vulnerabilities = sh(
+                        script: 'trivy image --format json ${IMAGE_NAME}:FE_${BUILD_NUMBER}',
+                        returnStdout: true
+                    )
+                    echo vulnerabilities
+                    
+                    if (vulnerabilities.contains('CRITICAL')) {
+                        error "Critical vulnerability found"
+                    }
+                }
 }
+
