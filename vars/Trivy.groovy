@@ -1,6 +1,6 @@
 def call(IMAGE_NAME, BUILD_NUMBER, TYPE) {
                 script {
-                    sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > vuln.json"
+                    sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > vulnerabilities.json"
                     def vulnerabilities = readJSON file: 'vulnerabilities.json'
                     
                     vulnerabilities.each { vulnerability ->
@@ -8,4 +8,5 @@ def call(IMAGE_NAME, BUILD_NUMBER, TYPE) {
                             error "Critical vulnerability found: ${vulnerability.vulnerability}"
                         }
                 }
-}
+         }
+} 
