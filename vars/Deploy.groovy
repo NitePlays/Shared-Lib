@@ -1,6 +1,4 @@
-def Deploy(String FE_DOCKER_IMAGE, String BE_DOCKER_IMAGE, String AWS_ACCESS_KEY_ID, String AWS_SECRET_ACCESS_KEY, String REG, String ECRREG) {
-  stage('Deploy') {
-    steps {
+def call(String FE_DOCKER_IMAGE, String BE_DOCKER_IMAGE, String AWS_ACCESS_KEY_ID, String AWS_SECRET_ACCESS_KEY, String REG, String ECRREG) {
       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws3', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
         script {
           def dockerCompose = """
@@ -33,6 +31,4 @@ def Deploy(String FE_DOCKER_IMAGE, String BE_DOCKER_IMAGE, String AWS_ACCESS_KEY
           }
         }
       }
-    }
-  }
 }
