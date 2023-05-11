@@ -1,3 +1,11 @@
+def info(message) {
+    echo "INFO: ${message}"
+}
+
+def warning(message) {
+    echo "WARNING: ${message}"
+}
+
 def Clone(PAT, NAME) {
        sh "git clone -b feature-ricards https://${PAT}@github.com/SpaceTech-project/SpaceTech-${NAME}.git ."
 }
