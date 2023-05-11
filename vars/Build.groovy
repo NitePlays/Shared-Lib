@@ -1,7 +1,19 @@
 def call() {
-       def repoClone() {
-              echo 'Hello world'
-       }
+    // Define the first echo function
+    def echoHelloWorld() {
+        echo 'Hello, World!'
+    }
+
+    // Define the second echo function
+    def echoHellWorldAgain() {
+        echo 'Hell, World Again!'
+    }
+
+    // Return a map containing the function names and their corresponding closures
+    return [
+        'echoHelloWorld': echoHelloWorld,
+        'echoHellWorldAgain': echoHellWorldAgain
+    ]
 }
 def Build() {
        sh 'npm run build'
