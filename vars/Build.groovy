@@ -1,4 +1,4 @@
-def repoClone(PAT) {
+def repoClone() {
        echo 'Hello world'
 }
 
