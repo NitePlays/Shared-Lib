@@ -1,7 +1,8 @@
-def repoClone() {
-       echo 'Hello world'
+def call() {
+       def repoClone() {
+              echo 'Hello world'
+       }
 }
-
 def Build() {
        sh 'npm run build'
 }
