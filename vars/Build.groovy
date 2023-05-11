@@ -10,7 +10,7 @@ def Dependencies() {
               sh 'npm install'
 }
 
-def Analysis(Tool scannerHome) {
+def Analysis(scannerHome) {
                 withSonarQubeEnv('SonarScan') {
                     sh "${scannerHome}/bin/sonar-scanner"
         }
@@ -20,11 +20,11 @@ def QualityGate() {
                 waitForQualityGate abortPipeline: true
 }
 
-def CreateDocker(String IMAGE_NAME, String BUILD_NUMBER, String TYPE) {
+def CreateDocker(IMAGE_NAME, BUILD_NUMBER, TYPE) {
                 sh "docker build -t ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ."
 }
 
-def Trivy(String IMAGE_NAME, String BUILD_NUMBER, String TYPE) {
+def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
                 script {
                     def trivy_output = sh(script: "trivy image --severity CRITICAL --no-progress ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER}", returnStdout: true)
                     if (trivy_output.contains('CRITICAL')) {
@@ -33,7 +33,7 @@ def Trivy(String IMAGE_NAME, String BUILD_NUMBER, String TYPE) {
         }
 }
 
-def PushToECR(String ECR_REGISTRY, String IMAGE_NAME, String DOCKER_IMAGE, String TYPE) {
+def PushToECR(ECR_REGISTRY, IMAGE_NAME, DOCKER_IMAGE, TYPE) {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws3']]) {
                     sh "docker login -u AWS -p \$(aws ecr get-login-password) ${ECR_REGISTRY}"
                     sh "docker tag ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ${DOCKER_IMAGE}"
