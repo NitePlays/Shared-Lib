@@ -1,12 +1,12 @@
-def call Clone(PAT) {
+def Clone(PAT) {
        sh 'git clone -b feature-ricards https://${PAT}@github.com/SpaceTech-project/SpaceTech-Frontend.git .'
 }
 
-def call Build() {
+def Build() {
        sh 'npm run build'
 }
 
-def call Dependencies() {
+def Dependencies() {
               sh 'npm install'
 }
 
