@@ -1,0 +1,54 @@
+def Clone(PAT, NAME) {
+       cleanWs()
+       sh 'git clone -b feature-ricards https://${PAT}@github.com/SpaceTech-project/SpaceTech-${NAME}.git .'
+}
+
+def Build() {
+       sh 'npm run build'
+}
+
+def Dependencies() {
+              sh 'npm install'
+}
+
+def Analysis(scannerHome, SonarQube) {
+        withSonarQubeEnv("${SonarQube}") {
+                sh "${scannerHome}/bin/sonar-scanner"
+        }
+}
+
+def QualityGate() {
+                waitForQualityGate abortPipeline: true
+}
+
+def CreateDocker(IMAGE_NAME, BUILD_NUMBER, TYPE) {
+                sh "docker build -t ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ."
+}
+
+def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
+                script {
+                    def vulnerabilities = sh(
+                        script: 'trivy image --format json ${IMAGE_NAME}:FE_${BUILD_NUMBER}',
+                        returnStdout: true
+                    )
+                    echo vulnerabilities
+                    
+                    if (vulnerabilities.contains('CRITICAL')) {
+                        error "Critical vulnerability found"
+                    }
+                }
+}
+
+def PushToECR(ECR_REGISTRY, IMAGE_NAME, DOCKER_IMAGE, TYPE) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws3']]) {
+                    sh "docker login -u AWS -p \$(aws ecr get-login-password) ${ECR_REGISTRY}"
+                    sh "docker tag ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ${DOCKER_IMAGE}"
+                    sh "docker push ${DOCKER_IMAGE}"
+        }
+}
+
+def CreateTar(TYPE, BUILD_NUMBER) {
+    dir('../archives') {
+        sh "sudo tar -czf ${TYPE}_${BUILD_NUMBER}.tar.gz --exclude=node_modules --exclude=README.md --directory=../${TYPE}Song ."
+    }
+}
