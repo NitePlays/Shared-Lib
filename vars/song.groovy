@@ -39,11 +39,11 @@ def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
                 }
 }
 
-def PushToECR(ECR_REGISTRY, IMAGE_NAME, DOCKER_IMAGE, TYPE) {
+def PushToECR(ECR_REGISTRY, IMAGE_NAME, DOCKER_IMG, TYPE) {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws3']]) {
                     sh "docker login -u AWS -p \$(aws ecr get-login-password) ${ECR_REGISTRY}"
-                    sh "docker tag ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ${DOCKER_IMAGE}"
-                    sh "docker push ${DOCKER_IMAGE}"
+                    sh "docker tag ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ${DOCKER_IMG}"
+                    sh "docker push ${DOCKER_IMG}"
         }
 }
 
