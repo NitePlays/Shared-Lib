@@ -5,7 +5,7 @@ def Failure(env.JOB_NAME, env.BUILD_NUMBER, env.BUILD_URL) {
     }
 }
 
-def Always() {
+def Always(TYPE, BUILD_NUMBER) {
         always {
           dir('../archives') {
             archiveArtifacts("${TYPE}_${BUILD_NUMBER}.tar.gz")
