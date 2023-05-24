@@ -6,11 +6,9 @@ def Failure(env.JOB_NAME, env.BUILD_NUMBER, env.BUILD_URL) {
 }
 
 def Always() {
-    always {
-        archiveArtifacts('../archives/workspace.tar.gz')
-        cleanWs()
-        timestamps {
-            archiveArtifacts('**/*.log')
+        always {
+          dir('../archives') {
+            archiveArtifacts("${TYPE}_${BUILD_NUMBER}.tar.gz")
+            }
         }
-    }
 }
