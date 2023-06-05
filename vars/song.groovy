@@ -22,7 +22,7 @@ def QualityGate() {
 }
 
 def CreateDocker(IMAGE_NAME, BUILD_NUMBER, TYPE) {
-                sh "docker build -t ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ."
+                sh "docker buildx build -t ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} --platform linux/amd64 ."
 }
 
 def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
