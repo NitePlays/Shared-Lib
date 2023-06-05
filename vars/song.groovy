@@ -49,6 +49,6 @@ def PushToECR(ECR_REGISTRY, IMAGE_NAME, DOCKER_IMG, TYPE) {
 
 def CreateTar(TYPE, BUILD_NUMBER) {
     dir('../archives') {
-        sh "tar -czf ${TYPE}_${BUILD_NUMBER}.tar.gz --exclude=node_modules --exclude=README.md --directory=../${TYPE}Song ."
+        sh "tar -czf ${TYPE}_${BUILD_NUMBER}.tar.gz --exclude=node_modules --exclude=README.md --directory=../${NAME}Song ."
     }
 }
