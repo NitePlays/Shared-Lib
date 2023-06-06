@@ -22,7 +22,7 @@ def QualityGate() {
 }
 
 def CreateDocker(IMAGE_NAME, BUILD_NUMBER, TYPE) {
-                sh "docker buildx build -t ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} --platform linux/amd64 ."
+                sh "sudo docker buildx build -t ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} --platform linux/amd64 ."
 }
 
 def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
@@ -41,9 +41,9 @@ def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
 
 def PushToECR(ECR_REGISTRY, IMAGE_NAME, DOCKER_IMG, TYPE) {
                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS']]) {
-                    sh "aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
-                    sh "docker tag ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ${DOCKER_IMG}"
-                    sh "docker push ${DOCKER_IMG}"
+                    sh "aws ecr-public get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${ECR_REGISTRY}"
+                    sh "sudo docker tag ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ${DOCKER_IMG}"
+                    sh "sudo docker push ${DOCKER_IMG}"
        }
 }
 
