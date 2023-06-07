@@ -34,7 +34,8 @@ def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
         )
         echo filteredOutput
 
-        if (filteredOutput.contains('HIGH')) {
+        if (filteredOutput.contains('CRITICAL')) {
+               error "Critical vulnerability found"
                slackSend (color: '#FF0000', message: "Critical vulnerability was found in ${env.JOB_NAME} build ${env.BUILD_NUMBER} (${env.BUILD_URL})")
         }
     }
