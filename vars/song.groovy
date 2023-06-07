@@ -29,7 +29,7 @@ def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
     script {
         sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > trivy_output.json"
         def filteredOutput = sh(
-            script: "cat trivy_output.json | jq '.Results[].Vulnerabilities[] | [.VulnerabilityID, .Severity, .PkgName, .Title]'",
+            script: "cat trivy_output.json | jq --raw-output '["VulnerabilityID", "Severity", "PkgName", "Title"], (.Results[].Vulnerabilities[] | [.VulnerabilityID, .Severity, .PkgName, .Title]) | @tsv' > input.json",
             returnStdout: true
         )
         echo filteredOutput
