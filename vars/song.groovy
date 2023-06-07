@@ -25,7 +25,7 @@ def CreateDocker(IMAGE_NAME, BUILD_NUMBER, TYPE) {
                 sh "docker buildx build -t ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ."
 }
 
-def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE):
+def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
     script {
         sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > trivy_output.json"
         def filteredOutput = sh(
