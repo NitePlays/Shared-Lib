@@ -27,9 +27,14 @@ def CreateDocker(IMAGE_NAME, BUILD_NUMBER, TYPE) {
 
 def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
     script {
-        sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > trivy_output.json"
+        def vulnerabilities = sh(
+            script: "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > trivy_output.json",
+            returnStdout: true
+        )
+        echo vulnerabilities
+
         def filteredOutput = sh(
-            script: "cat trivy_output.json | jq '.[] | select(.Vulnerabilities) | .Vulnerabilities[] | {severity: .Severity, package: .PkgName, title: .Title, description: .Description}'",
+            script: "cat trivy_output.json | jq '.[].Vulnerabilities[] | {severity: .Severity, package: .PkgName, title: .Title, description: .Description}'",
             returnStdout: true
         )
         echo filteredOutput
@@ -39,6 +44,7 @@ def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
         }
     }
 }
+
 
 
 def PushToECR(ECR_REGISTRY, IMAGE_NAME, DOCKER_IMG, TYPE) {
