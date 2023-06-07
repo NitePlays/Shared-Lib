@@ -27,18 +27,23 @@ def CreateDocker(IMAGE_NAME, BUILD_NUMBER, TYPE) {
 
 def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
     script {
+        // Run Trivy and save the output to a JSON file
         sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > trivy_output.json"
 
+        // Read the JSON file and apply JQ filters
         def trivyJson = sh(returnStdout: true, script: 'cat trivy_output.json').trim()
-        
-        def filteredJson = sh(returnStdout: true, script: "echo '${trivyJson}' | jq '.[].Vulnerabilities[] | {Severity: .Severity, Package: .PkgName, Vulnerability: .VulnerabilityID}'")
+
+        // Filter and display vulnerabilities
+        def filteredJson = sh(returnStdout: true, script: "echo '${trivyJson}' | jq '.[0].Vulnerabilities[] | {severity: .Severity, package: .PkgName, title: .Title, description: .Description}'")
         echo(filteredJson)
 
+        // Check for critical vulnerabilities
         if (filteredJson.contains('CRITICAL')) {
             error "Critical vulnerability found"
         }
     }
 }
+
 
 
 
