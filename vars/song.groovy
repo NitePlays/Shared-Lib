@@ -25,11 +25,11 @@ def CreateDocker(IMAGE_NAME, BUILD_NUMBER, TYPE) {
                 sh "docker buildx build -t ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ."
 }
 
-def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
+def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE):
     script {
         sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > trivy_output.json"
         def filteredOutput = sh(
-            cat trivy_output.json | jq '.Results[].Vulnerabilities[] | ["CVE-ID: " + .VulnerabilityID, "Severity: "+ .Severity, "Package: "+ .PkgName, "Title: "+  .Title]',
+            script: "cat trivy_output.json | jq '.Results[].Vulnerabilities[] | [\"CVE-ID: \" + .VulnerabilityID, \"Severity: \"+ .Severity, \"Package: \"+ .PkgName, \"Title: \"+  .Title]'",
             returnStdout: true
         )
         echo filteredOutput
