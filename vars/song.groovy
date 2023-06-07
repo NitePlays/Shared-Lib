@@ -26,18 +26,20 @@ def CreateDocker(IMAGE_NAME, BUILD_NUMBER, TYPE) {
 }
 
 def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
-                script {
-                    def vulnerabilities = sh(
-                           script: 'trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER}',
-                        returnStdout: true
-                    )
-                    echo vulnerabilities
-                    
-                    if (vulnerabilities.contains('CRITICAL')) {
-                        error "Critical vulnerability found"
-                    }
-                }
+    script {
+        sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > trivy_output.json"
+        def filteredOutput = sh(
+            script: "cat trivy_output.json | jq '.[].Vulnerabilities[] | {severity: .Severity, package: .PkgName, title: .Title, description: .Description}'",
+            returnStdout: true
+        )
+        echo filteredOutput
+
+        if (filteredOutput.contains('CRITICAL')) {
+            error "Critical vulnerability found"
+        }
+    }
 }
+
 
 def PushToECR(ECR_REGISTRY, IMAGE_NAME, DOCKER_IMG, TYPE) {
                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS']]) {
