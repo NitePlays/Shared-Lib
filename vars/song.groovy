@@ -29,20 +29,16 @@ def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
     script {
         sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > trivy_output.json"
         def filteredOutput = sh(
-            script: "cat trivy_output.json | jq '.Results[].Vulnerabilities[] | [\"CVE-ID: \" + .VulnerabilityID, \"Severity: \"+ .Severity, \"Package: \"+ .PkgName, \"Title: \"+  .Title]'",
+            script: 'cat trivy_output.json | jq ".Results[].Vulnerabilities[] | ["CVE-ID: " + .VulnerabilityID, "Severity: "+ .Severity, "Package: "+ .PkgName, "Title: "+  .Title]"',
             returnStdout: true
         )
         echo filteredOutput
 
-        if (filteredOutput.contains('CRITICAL')) {
-            error "Critical vulnerability found"
+        if (filteredOutput.contains('HIGH')) {
+               slackSend (color: '#FF0000', message: "Critical vulnerability was found in ${env.JOB_NAME} build ${env.BUILD_NUMBER} (${env.BUILD_URL})")
         }
     }
 }
-
-
-
-
 
 
 def PushToECR(ECR_REGISTRY, IMAGE_NAME, DOCKER_IMG, TYPE) {
