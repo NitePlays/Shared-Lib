@@ -22,12 +22,12 @@ def QualityGate() {
 }
 
 def CreateDocker(IMAGE_NAME, BUILD_NUMBER, TYPE) {
-                sh "docker buildx build -t ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ."
+                sh "docker buildx build -t ${IMAGE_NAME}:${env.BRANCH_NAME}_${TYPE}_${BUILD_NUMBER} ."
 }
 
 def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
     script {
-        sh "trivy image --format json ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} > trivy_output.json"
+        sh "trivy image --format json ${IMAGE_NAME}:${env.BRANCH_NAME}_${TYPE}_${BUILD_NUMBER} > trivy_output.json"
         def filteredOutput = sh(
             script: "cat trivy_output.json | jq '.Results[].Vulnerabilities[] | [\"CVE-ID: \" + .VulnerabilityID, \"Severity: \"+ .Severity, \"Package: \"+ .PkgName, \"Title: \"+  .Title]'",
             returnStdout: true
@@ -45,13 +45,13 @@ def Trivy(IMAGE_NAME, BUILD_NUMBER, TYPE) {
 def PushToECR(ECR_REGISTRY, IMAGE_NAME, DOCKER_IMG, TYPE) {
                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS']]) {
                     sh "aws ecr-public get-login-password --region us-east-1 |docker login --username AWS --password-stdin ${ECR_REGISTRY}"
-                    sh "docker tag ${IMAGE_NAME}:${TYPE}_${BUILD_NUMBER} ${DOCKER_IMG}"
+                    sh "docker tag ${IMAGE_NAME}:${env.BRANCH_NAME}_${TYPE}_${BUILD_NUMBER} ${DOCKER_IMG}"
                     sh "docker push ${DOCKER_IMG}"
        }
 }
 
 def CreateTar(TYPE, BUILD_NUMBER) {
     dir('../archives') {
-        sh "tar -czf ${TYPE}_${BUILD_NUMBER}.tar.gz --exclude=node_modules --exclude=README.md --directory=../${NAME}-Build ."
+        sh "tar -czf ${env.BRANCH_NAME}_${TYPE}_${BUILD_NUMBER}.tar.gz --exclude=node_modules --exclude=README.md --directory=../${NAME}-Build ."
     }
 }
